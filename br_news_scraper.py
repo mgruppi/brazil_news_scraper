@@ -20,6 +20,8 @@ import unicodedata
 import io
 import smtplib
 import datetime
+import HTML_scraper
+import progress_bar as PBR
 
 g = Goose()
 
@@ -155,30 +157,42 @@ def read_sources():
         line = line.rstrip('\n')
         line = line.split('@')
         sites.append(Site(line[0],line[1]))
-        print line[0]
+        #print line[0]
         #print line[0],"(",line[1],")"
     
     fin_sources.close()
     return sites
-        
+
+def run_HTML_sources():
+    HTML_scraper.scrape_reutersbr()
+    HTML_scraper.scrape_jornaldacidade()
+    HTML_scraper.scrape_esquerdadiario()        
 
 def main():
-  print "Running BR News Collector " + str( datetime.datetime.now())
+  start_time = datetime.datetime.now()
+  print "Running BR News Collector " + str(start_time)
+  print "HTML sources"
+  run_HTML_sources()
+  
   sites = read_sources()
   print ("Collecting ")
+  total_sites = len(sites)
+  count = 0
   for s in sites:
+      count+=1
+      PBR.progress_bar_color(count,total_sites,50,s.name)
       try:
-	  print(s.name)
           RSSfeed(s.name,s.url)
       except:
-          print (s.name," did not collect.")
-		  #save log
+          #print (s.name," did not collect.")
+		   #save log
           flog = open("collect.log","a")
           flog.write(str(datetime.datetime.now()))
           flog.write(": "+s.name + " did not collect.\n")
           flog.close()
-	
-  print "Finished batch. " + str(datetime.datetime.now())
+  finishing_time = datetime.datetime.now()
+  print "\nFinished batch. " + str(finishing_time)
+  print "Total time: " + str(finishing_time-start_time)
       
 
   

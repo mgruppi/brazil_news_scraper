@@ -97,7 +97,7 @@ def export_plain_text(f_path):
     
     #touch date dir
     d,m,y = get_date(datastore['published'])
-    date_str = y+"-"+m+"-"+d
+    date_str = y+m+d
     if not (os.path.isdir(out_dir+'/'+date_str)):
         os.mkdir(out_dir+'/'+date_str)
         
@@ -107,12 +107,24 @@ def export_plain_text(f_path):
         os.mkdir(out_dir+'/'+date_str+'/'+source_str)
     
     curr_dir = out_dir+'/'+date_str+'/'+source_str
-    curr_file = datastore['title']+'.txt'
-    dir_len = len(curr_dir+'/'+datastore['title']+'.txt')
+    #curr_file = source_str+'__'+datastore['title']+'.txt'
+    #dir_len = len(curr_dir+'/'+datastore['title']+'.txt')
 	
-    if dir_len > 255:
-		n_file = datastore['title'][:100]+'.txt'
-		curr_file = n_file
+    n_file = datastore['title'][:100]+'.txt'
+    curr_file = source_str +"__"+date_str+"__"+ n_file
+    curr_file = curr_file.replace('/','')
+    curr_file = curr_file.replace('&','')
+    curr_file = curr_file.replace('%','')
+    curr_file = curr_file.replace(":",'')
+    curr_file = curr_file.replace('*','')
+    curr_file = curr_file.replace('\\','')
+    curr_file = curr_file.replace('?','')
+    curr_file = curr_file.replace('%','')
+    curr_file = curr_file.replace('"','')
+    curr_file = curr_file.replace("'",'')
+    curr_file = curr_file.replace(',','')
+    curr_file = curr_file.replace(';','')
+    
 
     #if not os.path.isfile(curr_dir+"/"+curr_file):
     fout = open(curr_dir+'/'+curr_file,'w')
@@ -120,6 +132,7 @@ def export_plain_text(f_path):
     fout.write("\n")
     fout.write(datastore['content'].encode('utf8'))
     fout.close()
+    
     #else:
 	#	print("File exists:",str(curr_file.encode('utf8')))
 
